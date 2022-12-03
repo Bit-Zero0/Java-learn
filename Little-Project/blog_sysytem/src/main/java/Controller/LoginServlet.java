@@ -1,0 +1,79 @@
+package Controller;
+
+import Model.User;
+import Model.UserDao;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+
+@WebServlet("/login")
+public class LoginServlet extends HttpServlet {
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    //登录时的账号和密码验证
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("utf8");
+        resp.setCharacterEncoding("utf8");
+
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
+        System.out.println("username="+username +", password=" + password);
+        if(password==null || "".equals(password) ||username==null || "".equals(username)){
+            // 请求的内容缺失, 肯定是登录失败!!
+            resp.setContentType("text/html;charset=utf8");
+            resp.getWriter().write("当前的用户名或密码为空!");
+            return;
+        }
+
+        // 和数据库中的内容进行比较
+        UserDao userDao = new UserDao();
+        User user = userDao.selectByName(username);
+        if(user == null || !user.getPassword().equals(password)){
+            // 用户没有查到或者密码不匹配, 也是登录失败!
+            resp.setContentType("text/html; charset=utf8");
+            resp.getWriter().write("用户名或密码错误!");
+            return;
+        }
+
+        // 如果比较通过, 就创建会话.并把用户信息, 存储到会话中.
+        HttpSession session = req.getSession(true);
+        session.setAttribute("user" , user);
+
+        //返回一个重定向报文, 跳转到博客列表页.
+        resp.sendRedirect("blog_list.html");
+    }
+
+    // 这个方法用来让前端检测当前的登录状态.
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json;charset=utf8");
+        HttpSession session = req.getSession(false);
+        if(session == null){
+            // 检测下会话是否存在, 不存在说明未登录!
+            User user = new User();
+            resp.getWriter().write(objectMapper.writeValueAsString(user));
+            return;
+        }
+
+        User user = (User) session.getAttribute("user");
+        if(user == null) {
+            // 虽然有会话, 但是会话里没有 user 对象, 也视为未登录.
+            user = new User();
+            resp.getWriter().write(objectMapper.writeValueAsString(user));
+            return;
+        }
+
+        // 已经登录的状态!!
+        // 注意, 此处不要把密码给返回到前端
+        user.setPassword("");
+        resp.getWriter().write(objectMapper.writeValueAsString(user));
+    }
+}

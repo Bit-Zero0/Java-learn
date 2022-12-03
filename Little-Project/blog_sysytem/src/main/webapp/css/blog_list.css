@@ -1,0 +1,41 @@
+.blog{
+    width: 100%;
+    padding: 20px;
+}
+
+.blog .title{
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    padding: 10px 0;
+}
+
+.blog .date{
+    text-align: center;
+    color: rgb(107, 100, 100);
+}
+
+.blog .desc{
+    text-indent: 2em;
+}
+
+.blog a{
+    display: block;
+    width: 140px;
+    height: 40px;
+    margin: 10px auto;
+    border: 2 black solid;
+
+    color: rgb(255, 255, 255);
+    line-height: 40px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+
+    transition: all 0.5s;/* 如果想让变化变的柔和一些, 可以加上过渡效果 */
+}
+
+.blog a:hover{
+    background: rgb(51, 51, 51);
+    color: rgb(255, 157, 0);
+}

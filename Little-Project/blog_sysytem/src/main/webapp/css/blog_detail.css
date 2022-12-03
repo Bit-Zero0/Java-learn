@@ -1,0 +1,17 @@
+.blog-content{
+    padding: 30px;
+}
+
+.blog-content h3{
+    text-align: center;
+    padding: 20px 0;
+}
+
+.blog-content .date{
+    text-align: center;
+}
+
+.blog-content p{
+    text-indent: 2em;
+    padding: 10px 0;
+}

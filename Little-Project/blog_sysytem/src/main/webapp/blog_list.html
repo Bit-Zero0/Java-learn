@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客列表</title>
+
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/blog_list.css">
+</head>
+
+<body>
+    <div class="nav">
+        <img src="images/panda.png" alt="">
+        <span>My Blog</span>
+        <div class="spacer"></div>
+        <a href="blog_list.html">主页</a>
+        <a href="blog_edit.html">写博客</a>
+        <a href="logout">注销</a>
+    </div>
+
+    <!-- 这里的 .container 作为页面的版心 -->
+    <div class="container">
+        <!-- 个人信息区 -->
+        <div class="left">
+            <div class="card">
+                <img src="images/panda.png" alt="">
+                <h3></h3>
+                <a href="https://github.com/FengAlex1">Github 地址</a>
+                <div class="counter">
+                    <span>文章</span>
+                    <span>分类</span>
+                </div>
+                <div class="counter">
+                    <span>2</span>
+                    <span>1</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- blog内容区 -->
+        <div class="right">
+
+        </div>
+    </div>
+
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script>
+        function getBlogList() {
+            $.ajax({
+                type: "get",
+                url: "blog",
+                success: function (body) {
+                    // 1. 先把 .right 里原有的内容给清空
+                    let rightDiv = document.querySelector(".right");
+                    rightDiv.innerHTML = "";
+
+                    // 2. 遍历 body, 构造出一个个的 blogDiv
+                    for (let blog of body) {
+                        let blogDiv = document.createElement("div");
+                        blogDiv.className = "blog";
+
+                        // 构造标题
+                        let titleDiv = document.createElement("div");
+                        titleDiv.className = "title";
+                        titleDiv.innerHTML = blog.title;
+                        blogDiv.appendChild(titleDiv);
+
+                        // 构造发布时间
+                        let dateDiv = document.createElement("div");
+                        dateDiv.className = "date"
+                        dateDiv.innerHTML = blog.postTime;
+                        blogDiv.appendChild(dateDiv);
+
+                        // 构造博客的摘要
+                        let descDiv = document.createElement("div");
+                        descDiv.className = "desc";
+                        descDiv.innerHTML = blog.content;
+                        blogDiv.appendChild(descDiv);
+
+                        // 构造 查看全文
+                        let a = document.createElement('a');
+                        a.innerHTML = '查看全文 &gt;&gt;';
+
+                        // 此处希望点击之后能够跳转到 博客详情页 !!
+                        // 这个跳转过程需要告知服务器要访问的是哪个博客的详情页.
+                        a.href = 'blog_detail.html?blogId=' + blog.blogId;
+                        blogDiv.appendChild(a);
+
+                        rightDiv.appendChild(blogDiv);
+                    }
+                },
+                error: function () {
+                    alert("获取博客列表失败!");
+                }
+            });
+        }
+
+        getBlogList();
+    </script>
+
+    <!-- 用于进行了登录状态的监测 -->
+    <script src="js/common.js"></script>
+    <script>
+        // 针对博客列表页, 调用的时候传入参数
+        getUserInfo('blog_list.html');
+    </script>
+
+</body>
+
+</html>
